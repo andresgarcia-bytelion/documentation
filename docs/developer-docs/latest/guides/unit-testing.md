@@ -144,7 +144,8 @@ const { setupStrapi } = require('./helpers/strapi');
 
 /** this code is called once before any test is called */
 beforeAll(async () => {
-  await setupStrapi(); // singleton so it can be called many times
+  const strapiServer = await setupStrapi(); // singleton so it can be called many times
+  strapiServer.reload();
 });
 
 /** this code is called once before all the tested are finished */
@@ -152,7 +153,8 @@ afterAll(async () => {
   const dbSettings = strapi.config.get('database.connections.default.settings');
   
   //close server to release the db-file
-  await strapi.destroy();
+  const strapiServer = await setupStrapi();
+  strapiServer.destroy();
 
   //delete test database after all tests
   if (dbSettings && dbSettings.filename) {
